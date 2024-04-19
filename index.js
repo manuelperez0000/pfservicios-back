@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '.env' })
 const express = require('express')
 const CallBD = require('./db/connnection')
+const router = require('./routes')
 
 const cors = require('cors')
 const PORT = process.env.PORT || 5000;
@@ -13,11 +14,15 @@ process.env.TZ = "America/Caracas"
 const morgan = require('morgan')
 
 const callDB = new CallBD()
-callDB.connectToDB();
-
 app.use(morgan('dev'))
-
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+callDB.connectToDB();
+app.get('/', (req, res) => {
+    res.status(200).json({message: 'Welcome home'})
+})
+app.use('/api', router)
+
 
 
 

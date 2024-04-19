@@ -9,66 +9,21 @@ class CallDB {
             MONGO_PROD_URL,
             MONGO_DEV_URL,
             MONGO_DATABASE,
-            MONGO_USER,
-            MONGO_PASS,
-            MONGO_PORT,
             NODE_ENV,
         } = process.env;
-        const MONGO_HOST =
+        const url =
             NODE_ENV === 'production' ? MONGO_PROD_URL : MONGO_DEV_URL;
-        const url = `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}`;
-        console.log(url);
+        
         mongoose.set('strictQuery', false);
-        mongoose
-            .connect(url, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                user: MONGO_USER,
-                pass: MONGO_PASS,
-            })
-            .then(() => {
-                console.log('Conexion establecida');
-            })
-            .catch(er => {
-                if (er.code === 18) {
-                    mongoose.connect(
-                        `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}`
-                    );
-                    mongoose.connection.once('open', () => {
-                        const user = MONGO_USER;
-                        const password = MONGO_PASS;
-
-                        // Crear un nuevo usuario y asignarlo a la base de datos "aitiu"
-                        mongoose.connection.db
-                            .addUser(
-                                user,
-                                password,
-                                {
-                                    roles: [{ role: 'readWrite', db: 'aitiu' }],
-                                },
-                                err => {
-                                    if (err) {
-                                        console.error(
-                                            'Error al crear el usuario',
-                                            err
-                                        );
-                                    } else {
-                                        console.log(
-                                            'Usuario creado exitosamente'
-                                        );
-                                    }
-
-                                    // Cerrar la conexión después de crear el usuario
-                                    mongoose.connection.close();
-                                }
-                            )
-                            .then(() => {
-                                console.log('Usuario creado exitosamente');
-                                console.log('Conexion establecida');
-                            });
-                    });
-                }
-            });
+        mongoose.connect(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            dbName: MONGO_DATABASE,
+        }).then(() => {
+            console.log('Connected to the database');
+        }).catch((error) => {
+            console.log(error);
+        })
     }
 
     async disconectToDB() {
