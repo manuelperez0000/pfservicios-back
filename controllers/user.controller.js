@@ -6,7 +6,7 @@ const responseErrors = require('../helpers/response-errors');
 const setJWT = require('../helpers/set-jwt');
 const { createCrypto, decryptoPass, compareCrypto } = require('../helpers/crypto');
 const  transporter  = require('../helpers/nodeMailer');
-const  config = require('../config.json')
+const  config = require('../config.js')
 
 
 

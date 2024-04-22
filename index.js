@@ -2,7 +2,7 @@ require('dotenv').config({ path: '.env' })
 const express = require('express')
 const CallBD = require('./db/connnection')
 const router = require('./routes')
-const config = require('./config.json')
+const config = require('./config.js')
 
 const cors = require('cors')
 const PORT = config.port || 5000;

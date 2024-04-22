@@ -2,7 +2,7 @@
 /* eslint-disable class-methods-use-this */
 require('dotenv').config();
 const mongoose = require('mongoose');
-const config = require('../config.json');
+const config = require('../config.js');
 
 class CallDB {
     connectToDB() {
