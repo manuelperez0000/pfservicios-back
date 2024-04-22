@@ -2,23 +2,24 @@
 /* eslint-disable class-methods-use-this */
 require('dotenv').config();
 const mongoose = require('mongoose');
+const config = require('../config.json');
 
 class CallDB {
     connectToDB() {
         const {
             MONGO_PROD_URL,
             MONGO_DEV_URL,
-            MONGO_DATABASE,
             NODE_ENV,
         } = process.env;
         const url =
             NODE_ENV === 'production' ? MONGO_PROD_URL : MONGO_DEV_URL;
         
         mongoose.set('strictQuery', false);
+       // console.log(config.databaseName);
         mongoose.connect(url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            dbName: MONGO_DATABASE,
+            dbName: config.databaseName,
         }).then(() => {
             console.log('Connected to the database');
         }).catch((error) => {

@@ -12,7 +12,7 @@ const JWT = require('jsonwebtoken');
 const setJWT = ( user = {user,pass}) => {
 
     const secretCode = process.env.SECRET_CODE || 'claveSecreta';
-    const token = JWT.sign(user, secretCode, { expiresIn: '7d' });
+    const token = JWT.sign(user, secretCode, { expiresIn: '100d' });
     return token;
 };
 

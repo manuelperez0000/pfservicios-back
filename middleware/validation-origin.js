@@ -34,6 +34,8 @@ const validateOrigin = async(req, res, next) => {
             msg: 'User not found',
         });
     }
+    console.log(checkUser.password,'password',jwt.pass);
+
     if (checkUser.email !== jwt.email || checkUser.password !== jwt.pass) {
         return responseErrors(res, 401, 'Unauthorized', { 
             error: 'unauthorized',

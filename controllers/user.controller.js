@@ -1,10 +1,13 @@
 const User = require('../models/users.model');
 const { cleanUserInput } = require('../helpers/utils');
-const { hashCompare, createHash } = require('../helpers/bcrypt');
 const checkJwt = require('../helpers/checkJwt');
 const responseSuccess = require('../helpers/response-success');
 const responseErrors = require('../helpers/response-errors');
 const setJWT = require('../helpers/set-jwt');
+const { createCrypto, decryptoPass, compareCrypto } = require('../helpers/crypto');
+const  transporter  = require('../helpers/nodeMailer');
+const  config = require('../config.json')
+
 
 
 
@@ -23,7 +26,7 @@ class UserController {
             const { username, email, phone, indentification, newpassword } = req.body;
 
             // genero el password encriptado
-            const pass = createHash(newpassword);
+            const pass = createCrypto(newpassword);
             
             // creo el objeto con la informacion del usuario a crear
             const newUser = {
@@ -36,8 +39,8 @@ class UserController {
             }
             
             // creo el usuario en la base de datos
-            const user = await User.create(newUser);
-            
+            //const user = await User.create(newUser);
+            const user = await User(newUser).save();
             // genero el token para el usuario creado */
             const token = setJWT({email, pass});
 
@@ -68,7 +71,7 @@ class UserController {
                 return responseErrors(res, 404, 'User not found');
             }
 
-            const isPasswordValid = hashCompare(newpassword, user.password);
+            const isPasswordValid = compareCrypto(newpassword, user.password);
             
             // verifico que el password sea valido
             if (!isPasswordValid) {
@@ -77,7 +80,8 @@ class UserController {
 
             // genero el token para el usuario logueado */
             const {password} = user._doc;
-            const token = setJWT({email,password});
+
+            const token = setJWT({email,pass:password});
             
             // remuevo el password de la respuesta
             const data = cleanUserInput(user._doc);
@@ -104,12 +108,12 @@ class UserController {
         }
         if(getUser.password){
             const {password} = getUser;
-            getUser.password = createHash(password);
+            getUser.password = createCrypto(password);
 
         }
         console.log(getUser);
 
-       const userUpdated = await User.findOneAndUpdate({ _id: id }, req.body, { new: true });
+       const userUpdated = await User.findOneAndUpdate({ _id: id }, getUser, { new: true });
        
        if (!userUpdated) {
             return responseErrors(res, 404, 'User not found', null);
@@ -219,16 +223,39 @@ class UserController {
      *  Recibe un email y envia un correo electronico con el password
      */
     async forgotPassword(req, res) {
-        const { email } = req.body;
-        const user = await User.findOne({ email, active: true });
+        const reqEmail = req.body.email;
+        console.log(reqEmail);
+        const user = await User.findOne({ email:reqEmail, active: true });
         if (!user) {
             return responseErrors(res, 404, 'User not found', null);
         }
-        const { password } = user._doc;
+        const { username,password,email } = user._doc;
 
-        const transporter = nodemailer.createTransport({
-            
-        })
+       /* 
+        Los Permisos de gmail cambian constantemente, recomiendo NO utilizar este mecanismo de autenticación.
+        El metodo mas cercano  es realizar hasta el paso 6 de este tutorial:https://www.freecodecamp.org/espanol/news/como-usar-nodemailer-para-enviar-correos-electronicos-desde-tu-servidor-node-js/
+        Luego tomar el access token que se obtuvo en el paso 6 de este mismo tutorial. 
+         */
+    
+
+        
+        const mailOptions = {
+            from: `pfservicios <${config.auth.email}>`,
+            to: `${email}`,
+            subject: 'Correo de recuperación de contraseña',
+            text: `Hola ${username}, su contraseña es: "${decryptoPass(password)}", por favor no la comparta con nadie.`,
+           
+        }
+       const mailer = await transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                return responseErrors(res, 500, error.message, null);
+            } else {
+                return responseSuccess(res, 200, {msg: 'Email sent successfully', data: null, token: null});
+            }
+        }); 
+        
+        
+      return responseSuccess(res, 200, {msg: 'Email sent successfully', data: null, token: null});
 
     }
 }
