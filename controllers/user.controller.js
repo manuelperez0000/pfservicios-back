@@ -34,6 +34,7 @@ class UserController {
                 email,
                 phone,
                 active : true,
+                role: 'user',
                 indentification,
                 password: pass
             }
@@ -48,7 +49,7 @@ class UserController {
             const data = cleanUserInput(user._doc);
 
             // retorno la respuesta formateada correctamente enviando el token y la informacion del usuario
-            return responseSuccess(res, 200, {msg: 'User created', data, token});
+            return responseSuccess(res, 200, {msg: 'Usuario creado exitosamente', data, token});
         } catch (error) {
 
             // retorno la respuesta de error
@@ -68,14 +69,14 @@ class UserController {
             
             // verifico que el usuario exista y este activo
             if (!user) {
-                return responseErrors(res, 404, 'User not found');
+                return responseErrors(res, 404, 'El usuario no existe');
             }
 
             const isPasswordValid = compareCrypto(newpassword, user.password);
             
             // verifico que el password sea valido
             if (!isPasswordValid) {
-                return responseErrors(res, 401, 'Invalid password');
+                return responseErrors(res, 401, 'Contraseña incorrecta');
             }
 
             // genero el token para el usuario logueado */
@@ -116,7 +117,7 @@ class UserController {
        const userUpdated = await User.findOneAndUpdate({ _id: id }, getUser, { new: true });
        
        if (!userUpdated) {
-            return responseErrors(res, 404, 'User not found', null);
+            return responseErrors(res, 404, 'Usuario no encontrado', null);
        }
        // remuevo el password de la respuesta
        const data = cleanUserInput(userUpdated._doc);
@@ -124,10 +125,10 @@ class UserController {
        if(getUser.password){
             const {password} = userUpdated._doc;
             const token = setJWT({email,password});
-            return responseSuccess(res, 200, {msg: 'User updated', data, token });
+            return responseSuccess(res, 200, {msg: 'Contraseña actualizada', data, token });
         }       
         
-        return responseSuccess(res, 200, {msg: 'User updated', data, token:setJWT({email,pass}) });
+        return responseSuccess(res, 200, {msg: 'Usuario actualizado', data, token:setJWT({email,pass}) });
     }
 
     /**
@@ -138,17 +139,17 @@ class UserController {
         const {id,email} = req.body;
 
         if (!id) {
-            return responseErrors(res, 400, 'Missing id', null);
+            return responseErrors(res, 400, 'Id no enviado', null);
         }
         const user = await User.findOne({ email, active: true });
 
         if (!user) {
-            return responseErrors(res, 404, 'User not found', null);
+            return responseErrors(res, 404, 'Usuario no existe', null);
         }
 
         const userDeleted = await User.findOneAndUpdate({ _id: id }, { active: false }, { new: true });
 
-        return responseSuccess(res, 200, {msg: 'User deleted', data: null, token: null});
+        return responseSuccess(res, 200, {msg: 'Usuario eliminado', data: null, token: null});
     }
 
     /**
@@ -163,13 +164,13 @@ class UserController {
         const user = await User.findOne({ email, active: true });
 
         if (!user) {
-            return responseErrors(res, 404, 'User not found',null);
+            return responseErrors(res, 404, 'usuario no encontrado',null);
         }
 
-        const newToken = setJWT({email,pass});
+       // const newToken = setJWT({email,pass});
         const data = cleanUserInput(user._doc);
 
-        return responseSuccess(res, 200, {msg: 'User by token', data, token: newToken});
+        return responseSuccess(res, 200, {msg: 'acceso exitoso', data});
     }
     
     /**
@@ -182,7 +183,7 @@ class UserController {
         const users = await User.find({ active: true });
         const data = users.map(user => cleanUserInput(user._doc));
 
-        return responseSuccess(res, 200, {msg: 'User list', data:{ users:data, total: users.length  } })
+        return responseSuccess(res, 200, {msg: 'Lista de usuarios', data:{ users:data, total: users.length  } })
     }
 
 
@@ -197,10 +198,10 @@ class UserController {
         const users = await User.find({ email: { $regex: email, $options: 'i' }, active: true });
 
         if (!users) {
-            return responseErrors(res, 404, 'User not found', null);
+            return responseErrors(res, 404, 'Usuario no encontrado', null);
         }
         const data = users.map(user => cleanUserInput(user._doc));
-        return responseSuccess(res, 200, {msg: 'Users found', data:{ users:data, total: users.length  }});
+        return responseSuccess(res, 200, {msg: 'Usuario encontrados', data:{ users:data, total: users.length  }});
     }
 
     
@@ -213,9 +214,9 @@ class UserController {
         const users = await User.find({ username: { $regex: name, $options: 'i' }, active: true });
 
         if (!users) {
-            return responseErrors(res, 404, 'Users not found', null);
+            return responseErrors(res, 404, 'Usuario no encontrado', null);
         }
-        return responseSuccess(res, 200, {msg: 'Users found', data:{ users:users, total: users.length  }});
+        return responseSuccess(res, 200, {msg: 'usuario encontrados', data:{ users:users, total: users.length  }});
     }
 
 
@@ -227,7 +228,7 @@ class UserController {
         console.log(reqEmail);
         const user = await User.findOne({ email:reqEmail, active: true });
         if (!user) {
-            return responseErrors(res, 404, 'User not found', null);
+            return responseErrors(res, 404, 'Usuario no encontrado', null);
         }
         const { username,password,email } = user._doc;
 
@@ -250,12 +251,12 @@ class UserController {
             if (error) {
                 return responseErrors(res, 500, error.message, null);
             } else {
-                return responseSuccess(res, 200, {msg: 'Email sent successfully', data: null, token: null});
+                return responseSuccess(res, 200, {msg: 'Correo enviado, revise la bandeja de su cuenta', data: null, token: null});
             }
         }); 
         
         
-      return responseSuccess(res, 200, {msg: 'Email sent successfully', data: null, token: null});
+      return responseSuccess(res, 200, {msg: 'Correo enviado, revise la bandeja de su cuenta', data: null, token: null});
 
     }
 }
