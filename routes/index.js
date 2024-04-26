@@ -42,7 +42,7 @@ router.post('/user/create',[cors(),
 
 
 // Login user
-router.post('/user/login',[
+router.post('/user/login',[cors(),
     check('email', 'Correo obligatorio').not().isEmpty(),
     check('newpassword', 'Contraseña obligatoria').not().isEmpty(),
     check('email', 'Formato de correo invalido').isEmail(),
@@ -51,32 +51,32 @@ router.post('/user/login',[
 
 
 // Get users
-router.get('/user/getusers',[
+router.get('/user/getusers',[cors(),
     validateOrigin,    
 ],userController.getUsers)
 
 
 // Get user by email
-router.post('/user/getuserbyemail',[
+router.post('/user/getuserbyemail',[cors(),
     validateOrigin,
 ],userController.getUserByEmail)
 
 
 // get user by token
-router.post('/user/getuserbytoken',[
+router.post('/user/getuserbytoken',[cors(),
     validateOrigin,
 ],userController.getUserByToken)
 
 
 // Update user
-router.put('/user/update',[
+router.put('/user/update',[cors(),
     validateOrigin,
     validateFields
 ],userController.updateUser)
 
 
 // Delete user
-router.put('/user/delete',[
+router.put('/user/delete',[cors(),
     validateOrigin,
     check('token', 'Token obligatorio').not().isEmpty(),
     check('email', 'Formato de correo invalido').isEmail(),
@@ -85,7 +85,7 @@ router.put('/user/delete',[
 
 
 // send email
-router.post('/user/forgotpassword',[
+router.post('/user/forgotpassword',[cors(),
     check('email', 'Formato de correo invalido').isEmail(), 
     validateFields
 ],userController.forgotPassword)
