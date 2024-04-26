@@ -28,7 +28,7 @@ router.get('/test', (req, res) => {
  */
 
 // Create user
-router.post('/user/create',[
+router.post('/user/create',[cors(),
     check('username', 'Nombre obligatorio').not().isEmpty(),
     check('email', 'Correo obligatorio').not().isEmpty(),
     checkUser,
