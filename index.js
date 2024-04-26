@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '.env' })
 const express = require('express')
 const CallBD = require('./db/connnection')
-const router = require('./routes')
+const routes = require('./routes')
 const config = require('./config.js')
 
 const cors = require('cors')
@@ -22,7 +22,7 @@ callDB.connectToDB();
 app.get('/', (req, res) => {
     res.status(200).json({message: 'Welcome home'})
 })
-app.use('/api', router)
+routes(app)
 
 
 

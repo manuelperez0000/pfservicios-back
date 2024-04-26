@@ -3,9 +3,17 @@ const { check } = require('express-validator');
 const { validateFields, checkUser } = require('../middleware/validation-fields');
 const { validateOrigin } = require('../middleware/validation-origin');
 const UserController = require('../controllers/user.controller');
+const cors = require('cors');
 const router = express.Router();
 
+
 const userController = new UserController;
+
+
+
+const routes = (app) => {
+   app.use(cors())
+   app.use('/api', router)
 
 router.get('/', (req, res) => {
     res.status(200).json({message: 'Welcome to my API'})
@@ -80,11 +88,11 @@ router.post('/user/forgotpassword',[
     check('email', 'Formato de correo invalido').isEmail(), 
     validateFields
 ],userController.forgotPassword)
-
+}
 
 /**
  * transaction routes
  */
 
 
-module.exports = router
+module.exports = routes
