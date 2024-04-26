@@ -13,6 +13,7 @@ const userController = new UserController;
 
 const routes = (app) => {
    app.use(cors())
+   app.options('*', cors())
    app.use('/api', router)
 
 router.get('/', (req, res) => {
