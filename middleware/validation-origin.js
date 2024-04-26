@@ -13,6 +13,7 @@ const validateOrigin = async(req, res, next) => {
         });
     }
     const token = await authorization.split(' ')[1];
+    //console.log(token, 'token');
     if (token == 'undefined' || !token) {
       
         return responseErrors(res, 401, 'Unauthorized', {
@@ -35,7 +36,11 @@ const validateOrigin = async(req, res, next) => {
                 msg: 'User not found',
             });
         }
+       /*  console.log(jwt, 'line 39');
         console.log(checkUser.password,'password',jwt.pass);
+        console.log(checkUser.password === jwt.pass, 'password');
+        console.log(checkUser.email === jwt.email, 'email'); */
+
     
         if (checkUser.email !== jwt.email || checkUser.password !== jwt.pass) {
             return responseErrors(res, 401, 'Unauthorized', { 

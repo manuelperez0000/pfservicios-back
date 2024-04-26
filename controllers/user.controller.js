@@ -112,7 +112,7 @@ class UserController {
             getUser.password = createCrypto(password);
 
         }
-        console.log(getUser);
+        //console.log(getUser);
 
        const userUpdated = await User.findOneAndUpdate({ _id: id }, getUser, { new: true });
        
@@ -123,8 +123,9 @@ class UserController {
        const data = cleanUserInput(userUpdated._doc);
        
        if(getUser.password){
-            const {password} = userUpdated._doc;
-            const token = setJWT({email,password});
+            const {password,email} = userUpdated._doc;
+           // console.log(password,email);
+            const token = setJWT({email,pass:password});
             return responseSuccess(res, 200, {msg: 'Contraseña actualizada', data, token });
         }       
         
@@ -197,7 +198,7 @@ class UserController {
         // obtengo todos los usuarios activos de la base de datos que coincidan con parcialmente con el email ingresado
         const users = await User.find({ email: { $regex: email, $options: 'i' }, active: true });
 
-        if (!users) {
+        if (!users || users.length === 0) {
             return responseErrors(res, 404, 'Usuario no encontrado', null);
         }
         const data = users.map(user => cleanUserInput(user._doc));
