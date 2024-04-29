@@ -11,8 +11,8 @@ module.exports = {
     databaseName: "pfservicios",
     port: 8000,
     auth: {
-        email: "pfservicios28042024@hotmail.com",
-        password: "P7sErvicios28042024",
+        email: "manuelperez.0000@gmail.com",
+        password: "mhhc osxd dmot vtgv",
     },
     paypalUrl: "https://api-m.sandbox.paypal.com"
 }
