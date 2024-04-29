@@ -9,7 +9,12 @@ const JWT = require('jsonwebtoken');
 function checkJwt(token) {
     const secretCode = process.env.SECRET_CODE || 'claveSecreta';
    
-    const decoded = JWT.verify(token, secretCode);
+    const decoded = JWT.verify(token, secretCode, function (err, decoded) {
+        if (err) {
+            return err;
+        }
+        return decoded;
+    });
     return decoded;
 }
 

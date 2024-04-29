@@ -137,20 +137,19 @@ class UserController {
      * @returns 
      */
     async deleteUser(req, res) {
-        const {id,email} = req.body;
+        const {id,active} = req.body;
 
-        if (!id) {
-            return responseErrors(res, 400, 'Id no enviado', null);
+        const userDeleted = await User.findOneAndUpdate({ _id: id }, { active }, { new: true });
+
+        if (!userDeleted) {
+            return responseErrors(res, 404, 'Usuario no encontrado', null);
         }
-        const user = await User.findOne({ email, active: true });
-
-        if (!user) {
-            return responseErrors(res, 404, 'Usuario no existe', null);
+        
+        if(userDeleted.active){
+            return responseSuccess(res, 200, {msg: 'Usuario Activado', user: cleanUserInput(userDeleted._doc) });
+        }else{
+            return responseSuccess(res, 200, {msg: 'Usuario eliminado', user: cleanUserInput(userDeleted._doc) });
         }
-
-        const userDeleted = await User.findOneAndUpdate({ _id: id }, { active: false }, { new: true });
-
-        return responseSuccess(res, 200, {msg: 'Usuario eliminado', data: null, token: null});
     }
 
     /**
@@ -179,12 +178,16 @@ class UserController {
      * @returns 
      */
     async getUsers(req, res) {
-
+        const {role} = req.params
         // obtengo todos los usuarios activos de la base de datos
-        const users = await User.find({ active: true });
+      if(role=='admin'){
+        const users = await User.find();
         const data = users.map(user => cleanUserInput(user._doc));
-
-        return responseSuccess(res, 200, {msg: 'Lista de usuarios', data:{ users:data, total: users.length  } })
+        return responseSuccess(res, 200, {msg: 'Lista de usuarios', data:{ users:data, total: users.length  } });
+      }
+      const users = await User.find({ active: true });
+      const data = users.map(user => cleanUserInput(user._doc));
+      return responseSuccess(res, 200, {msg: 'Lista de usuarios', data:{ users:data, total: users.length  } }); 
     }
 
 
@@ -238,7 +241,6 @@ class UserController {
         El metodo mas cercano  es realizar hasta el paso 6 de este tutorial:https://www.freecodecamp.org/espanol/news/como-usar-nodemailer-para-enviar-correos-electronicos-desde-tu-servidor-node-js/
         Luego tomar el access token que se obtuvo en el paso 6 de este mismo tutorial. 
          */
-    
 
         
         const mailOptions = {
@@ -248,11 +250,11 @@ class UserController {
             text: `Hola ${username}, su contraseña es: "${decryptoPass(password)}", por favor no la comparta con nadie.`,
            
         }
-       const mailer = await transporter.sendMail(mailOptions, function(error, info){
+        await transporter.sendMail(mailOptions, function(error, info){
             if (error) {
-                return responseErrors(res, 500, error.message, null);
+               console.log(error);
             } else {
-                return responseSuccess(res, 200, {msg: 'Correo enviado, revise la bandeja de su cuenta', data: null, token: null});
+                console.log('Email sent: ' + info.response);
             }
         }); 
         

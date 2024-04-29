@@ -12,7 +12,20 @@ scope,
 expires } = config.auth;
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+
+
+    host: "smtp.office365.com",
+    port: 587,
+    secure: false, // STARTTLS
+    tls: {
+        rejectUnauthorized: false
+    },
+    requireTLS: false,
+    auth: {
+        user: 'pfservicios28042024@hotmail.com',
+        pass: 'P7sErvicios28042024'
+    }
+ /*    service: 'gmail',
     auth: {
         user: email,
         pass: password,
@@ -32,8 +45,9 @@ const transporter = nodemailer.createTransport({
     requireTLS: false,
     debug: true,
     logger: true,
-    host: 'smtp.gmail.com',
+    host: 'smtp.gmail.com', */
 
 });
+
 
 module.exports = transporter

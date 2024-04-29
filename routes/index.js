@@ -3,12 +3,15 @@ const { check } = require('express-validator');
 const { validateFields, checkUser } = require('../middleware/validation-fields');
 const { validateOrigin } = require('../middleware/validation-origin');
 const UserController = require('../controllers/user.controller');
+const OrderController = require('../controllers/order.controller');
+const PaypalController =require('../controllers/paypal.controller')
 const cors = require('cors');
 const router = express.Router();
 
 
 const userController = new UserController;
-
+const paypalController = new PaypalController();
+const orderController = new OrderController;
 
 
 const routes = (app) => {
@@ -23,7 +26,7 @@ router.get('/test', (req, res) => {
     res.status(200).json({message: 'Welcome from test route'})
 })
 
-/**
+/** 
  * User routes
  */
 
@@ -51,7 +54,7 @@ router.post('/user/login',[cors(),
 
 
 // Get users
-router.get('/user/getusers',[cors(),
+router.get('/user/getusers/:role?',[cors(),
     validateOrigin,    
 ],userController.getUsers)
 
@@ -78,9 +81,6 @@ router.put('/user/update',[cors(),
 // Delete user
 router.put('/user/delete',[cors(),
     validateOrigin,
-    check('token', 'Token obligatorio').not().isEmpty(),
-    check('email', 'Formato de correo invalido').isEmail(),
-    validateFields
 ],userController.deleteUser);
 
 
@@ -89,11 +89,33 @@ router.post('/user/forgotpassword',[cors(),
     check('email', 'Formato de correo invalido').isEmail(), 
     validateFields
 ],userController.forgotPassword)
-}
 
 /**
- * transaction routes
+ * Paypal routes
+*/
+router.get('/paypal/gettoken',[cors(),
+],paypalController.getAccessToken)
+
+/**
+ * Order routes
  */
 
+// Create order
 
+router.post('/order/create',[cors(),
+    validateOrigin],
+orderController.creaOrder
+)
+
+// Get orders
+router.get('/order/getorders',[cors(),
+    validateOrigin],
+orderController.getOrders
+)
+
+
+router.post('/order/update',[cors(),validateOrigin],orderController.updateOrder)
+
+
+}
 module.exports = routes
