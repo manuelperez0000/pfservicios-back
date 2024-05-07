@@ -8,10 +8,6 @@ const { createCrypto, decryptoPass, compareCrypto } = require('../helpers/crypto
 const  transporter  = require('../helpers/nodeMailer');
 const  config = require('../config.js')
 
-
-
-
-
 class UserController {
 
     

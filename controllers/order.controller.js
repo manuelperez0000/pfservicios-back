@@ -6,8 +6,6 @@ const responseErrors = require('../helpers/response-errors');
 const   transporter = require('../helpers/nodeMailer')
 const User = require('../models/users.model');
 
-
-
 /**
  * paypal
  * {

@@ -6,16 +6,12 @@ const config = require('../config.js');
 
 class CallDB {
     connectToDB() {
-        const {
-            MONGO_PROD_URL,
-            MONGO_DEV_URL,
-            NODE_ENV,
-        } = process.env;
-        const url =
-            NODE_ENV === 'production' ? MONGO_PROD_URL : MONGO_DEV_URL;
-        
+        const { MONGO_PROD_URL, MONGO_DEV_URL, NODE_ENV } = process.env;
+
+        const url = NODE_ENV === 'production' ? MONGO_PROD_URL : MONGO_DEV_URL;
+
         mongoose.set('strictQuery', false);
-       // console.log(config.databaseName);
+        // console.log(config.databaseName);
         mongoose.connect(url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
