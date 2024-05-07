@@ -1,12 +1,3 @@
-const {
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REFRESH_TOKEN,
-    ACCESS_TOKEN ,
-    SCOOPE,
-    EXPIRES
-} = process.env;
-
 module.exports = {
     databaseName: "pfservicios1000",
     port: 8000,
